@@ -26,6 +26,16 @@ app.get("/", (req, res) => {
     res.send("Server is up and database is connecting...");
 });
 
+// Global error handler — catches multer / Cloudinary errors
+app.use((err, req, res, next) => {
+    console.error("GLOBAL ERROR:", err.message);
+    console.error(err.stack);
+    res.status(500).json({
+        success: false,
+        message: err.message || "Internal Server Error",
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

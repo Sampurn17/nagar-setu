@@ -18,7 +18,7 @@ const Navbar = () => {
     }
 
     return (
-        <nav className="fixed top-0 left-0 w-full h-16 bg-white shadow-md z-50 flex items-center px-8">
+        <nav className="fixed top-0 left-0 w-full h-16 bg-white shadow-md z-[1000] flex items-center px-8">
 
             {/* Left */}
             <div className="flex-1">
