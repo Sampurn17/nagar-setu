@@ -57,12 +57,9 @@ const MyComplaints = () => {
                                 </p>
                                 <p>
                                     <span className="text-slate-500">Department:</span>{" "}
-                                    <span className="text-slate-900 font-medium">{complaint.department}</span>
+                                    <span className="text-slate-900 font-medium">{complaint.department || "N/A"}</span>
                                 </p>
-                                <p>
-                                    <span className="text-slate-500">Category:</span>{" "}
-                                    <span className="text-slate-900 font-medium">{complaint.category}</span>
-                                </p>
+
                                 <p>
                                     <span className="text-slate-500">Status:</span>{" "}
                                     <span className={

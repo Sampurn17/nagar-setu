@@ -1,11 +1,13 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom'
 import api from '../../../api/axios'
+import { toast, Slide } from 'react-toastify'
 
 const Form = ({ form, setForm }) => {
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
@@ -29,6 +31,23 @@ const Form = ({ form, setForm }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.title || !form.description || !form.latitude || !form.longitude || !form.department) {
+      toast.error("Fill the empty fields", {
+        position: "top-right",
+        autoClose: 1300,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Slide,
+      });
+      return;
+    }
+
+    setLoading(true);
     try {
       const formData = new FormData();
 
@@ -43,7 +62,17 @@ const Form = ({ form, setForm }) => {
       }
 
       await api.post("/complaints", formData);
-      alert("Complaint submitted successfully!");
+      toast.success("Complaint submitted successfully!", {
+        position: "top-right",
+        autoClose: 1300,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Slide,
+      });
 
       // Reset form
       setForm({
@@ -59,7 +88,19 @@ const Form = ({ form, setForm }) => {
 
       navigate("/dashboard");
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to submit complaint");
+      toast.error(err.response?.data?.message || "Failed to submit complaint", {
+        position: "top-right",
+        autoClose: 1300,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Slide,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -193,9 +234,17 @@ const Form = ({ form, setForm }) => {
 
       <button
         type="submit"
-        className="bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors duration-200 shadow-lg shadow-blue-600/20 cursor-pointer"
+        disabled={loading}
+        className="bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors duration-200 shadow-lg shadow-blue-600/20 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
       >
-        Submit a complaint
+        {loading ? (
+          <>
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            Submitting...
+          </>
+        ) : (
+          'Submit a complaint'
+        )}
       </button>
     </form>
   )

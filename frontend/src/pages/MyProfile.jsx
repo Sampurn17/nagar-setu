@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import Navbar from "./Navbar";
+import { toast, Slide } from "react-toastify";
 const MyProfile = () => {
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -9,7 +10,17 @@ const MyProfile = () => {
         const res = await api.get("/auth/me");
         setUser(res.data.user)
       } catch (error) {
-        alert("Failed to fetch user");
+        toast.error("Failed to fetch user", {
+          position: "top-right",
+          autoClose: 1300,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Slide,
+        });
       }
     }
     fetchUser();
