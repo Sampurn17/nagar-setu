@@ -22,6 +22,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api/auth", require("./routes/userRoutes"));
 app.use("/api/complaints", require("./routes/complaintRoutes"));
+app.use("/api/analytics", require("./routes/analyticsRoutes"));
 app.get("/", (req, res) => {
     res.send("Server is up and database is connecting...");
 });

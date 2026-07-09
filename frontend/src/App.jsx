@@ -9,6 +9,7 @@ import Report from './pages/Report/Report';
 import Analytics from './pages/Analytics';
 import MyComplaints from './pages/MyComplaints';
 import MyProfile from './pages/MyProfile';
+import AdminViewComplaints from './pages/AdminViewComplaints';
 const App = () => {
   return (
     <Routes>
@@ -39,6 +40,11 @@ const App = () => {
       <Route path='/my-profile' element={
         <ProtectedRoute>
           <MyProfile />
+        </ProtectedRoute>
+      } />
+      <Route path='/admin/complaints' element={
+        <ProtectedRoute>
+          <AdminViewComplaints />
         </ProtectedRoute>
       } />
 

@@ -30,7 +30,7 @@ async function registerUserController(req, res) {
         password: hash,
     });
     const token = jwt.sign({
-        id: user._id, name: user.name },
+        id: user._id, name: user.name, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: "1d" }
     )
@@ -80,6 +80,7 @@ async function loginUserController(req, res) {
         {
             id: user._id,
             name: user.name,
+            role: user.role,
         },
         process.env.JWT_SECRET,
         { expiresIn: "1d" }

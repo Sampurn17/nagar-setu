@@ -8,39 +8,7 @@ import redLocationIcon from '../assets/red-location.png'
 import yellowLocationIcon from '../assets/yellow-location.png'
 import blueLocationIcon from '../assets/blue-location.png'
 import api from '../api/axios'
-
-const summaryCards = [
-  {
-    label: "Total Issues Reported",
-    value: 100,
-    icon: (
-      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    ),
-    color: "from-blue-500 to-blue-600",
-  },
-  {
-    label: "Resolved This Month",
-    value: 100,
-    icon: (
-      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
-    color: "from-emerald-500 to-emerald-600",
-  },
-  {
-    label: "Active Dispatches",
-    value: 100,
-    icon: (
-      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-      </svg>
-    ),
-    color: "from-amber-500 to-amber-600",
-  },
-];
+import { MapPin } from 'lucide-react'
 
 const Dashboard = () => {
   const [complaints, setComplaints] = useState([]);
@@ -66,33 +34,21 @@ const Dashboard = () => {
     });
   };
 
+  const getStatusBadge = (status) => {
+    if (status === 'resolved' || status === 'completed') return 'bg-emerald-50 text-emerald-500 border border-emerald-200';
+    if (status === 'assigned' || status === 'in-progress') return 'bg-amber-50 text-amber-500 border border-amber-200';
+    return 'bg-red-50 text-red-500 border border-red-200';
+  };
+
   return (
-    <div className="h-screen w-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen w-screen flex flex-col bg-slate-50">
       <Navbar />
 
-      <div className="flex-1 flex flex-col pt-16 overflow-hidden">
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-3 gap-4 px-6 py-4">
-          {summaryCards.map((card, i) => (
-            <div
-              key={i}
-              className={`bg-gradient-to-r ${card.color} text-white rounded-xl p-5 flex items-center gap-4 shadow-lg`}
-            >
-              <div className="bg-white/20 rounded-lg p-2">
-                {card.icon}
-              </div>
-              <div>
-                <p className="text-3xl font-bold">{card.value}</p>
-                <p className="text-sm text-white/80">{card.label}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="flex-1 flex flex-col pt-16 overflow-auto">
 
         {/* Map + Sidebar */}
-        <div className="flex-1 flex mx-6 mb-4 rounded-xl overflow-hidden shadow-lg">
-          <div className="flex-1 relative">
+        <div className="flex mx-6 mt-4 rounded-xl overflow-hidden shadow-sm border border-slate-200 bg-white" style={{ height: '65vh' }}>
+          <div className="w-[72%] relative">
             <MapContainer center={[28.6139, 77.2090]} zoom={13} className="h-full w-full">
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -137,10 +93,85 @@ const Dashboard = () => {
             </MapContainer>
           </div>
 
-          <div className="w-1/3 bg-white border-l overflow-y-auto p-5">
-            <h2 className="text-lg font-bold text-gray-800 mb-3">Recent Activity</h2>
-            <p className="text-sm text-gray-500">Complaint updates will appear here.</p>
+          <div className="w-[28%] bg-white border-l border-slate-200 overflow-y-auto p-5">
+            <h2 className="text-lg font-bold text-slate-900 mb-4">Recent Activity</h2>
+            {complaints.filter(c => c.status === 'resolved' || c.status === 'completed').length === 0 ? (
+              <p className="text-sm text-slate-500">No resolved complaints yet.</p>
+            ) : (
+              <div className="space-y-3">
+                {complaints
+                  .filter(c => c.status === 'resolved' || c.status === 'completed')
+                  .map((c) => (
+                    <div key={c._id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm transition-transform duration-200">
+                      <h3 className="text-sm font-semibold text-slate-900 leading-snug">{c.title}</h3>
+                      <p className="text-xs text-slate-600 mt-1 line-clamp-2">{c.description}</p>
+
+                      <div className="mt-3 space-y-1.5 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Department</span>
+                          <span className="font-medium text-slate-900">{c.department}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Status</span>
+                          <span className="font-semibold text-emerald-500 capitalize">{c.status}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Location</span>
+                          <span className="font-medium text-slate-900">{c.latitude?.toFixed(4)}, {c.longitude?.toFixed(4)}</span>
+                        </div>
+                        {c.updatedAt && (
+                          <div className="flex justify-between">
+                            <span className="text-slate-500">Resolved</span>
+                            <span className="font-medium text-slate-900">{new Date(c.updatedAt).toLocaleDateString()}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
+        </div>
+
+        {/* Latest Complaints */}
+        <div className="mx-6 mt-6 mb-6">
+          <h2 className="text-xl font-bold text-slate-900 mb-4">Latest Complaints</h2>
+          {complaints.length === 0 ? (
+            <p className="text-sm text-slate-500">No complaints yet.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {complaints.slice(0, 9).map((c) => (
+                <div
+                  key={c._id}
+                  className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 transition-transform duration-200"
+                >
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <h3 className="text-sm font-semibold text-slate-900 leading-snug">{c.title}</h3>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold capitalize whitespace-nowrap ${getStatusBadge(c.status)}`}>
+                      {c.status || 'pending'}
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 text-xs text-slate-600">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Department</span>
+                      <span className="font-medium text-slate-900">{c.department}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Reported</span>
+                      <span className="font-medium text-slate-900">
+                        {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : '—'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1 text-slate-500">
+                      <MapPin className="w-3 h-3" />
+                      <span className="text-xs">{c.latitude?.toFixed(4)}, {c.longitude?.toFixed(4)}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
       </div>

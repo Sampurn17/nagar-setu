@@ -64,13 +64,13 @@ const Form = ({ form, setForm }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white/70 relative p-8 rounded-lg shadow-lg w-1/2 flex flex-col gap-5 overflow-y-auto">
-      <h1 className="text-3xl my-16 font-bold text-center mb-2">
+    <form onSubmit={handleSubmit} className="bg-white/95 backdrop-blur-sm border-r border-slate-200 relative p-8 shadow-sm w-1/2 flex flex-col gap-5 overflow-y-auto">
+      <h1 className="text-3xl my-16 font-bold text-slate-900 text-center mb-2">
         Report a Complaint
       </h1>
 
       <div className="flex flex-col">
-        <label className="mb-1 font-medium">
+        <label className="mb-1 font-semibold text-slate-700 text-sm">
           Title
         </label>
         <input
@@ -79,12 +79,12 @@ const Form = ({ form, setForm }) => {
           name="title"
           value={form.title}
           onChange={handleChange}
-          className="border rounded p-2"
+          className="border border-slate-200 bg-slate-50 rounded-xl p-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
         />
       </div>
 
       <div className="flex flex-col">
-        <label className="mb-1 font-medium">
+        <label className="mb-1 font-semibold text-slate-700 text-sm">
           Description
         </label>
         <textarea
@@ -93,12 +93,12 @@ const Form = ({ form, setForm }) => {
           name="description"
           value={form.description}
           onChange={handleChange}
-          className="border rounded p-2"
+          className="border border-slate-200 bg-slate-50 rounded-xl p-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
         />
       </div>
 
       <div className="flex flex-col">
-        <label className="mb-1 font-medium">
+        <label className="mb-1 font-semibold text-slate-700 text-sm">
           Image
         </label>
         <input
@@ -112,12 +112,12 @@ const Form = ({ form, setForm }) => {
         />
         <label
           htmlFor="image-upload"
-          className="flex items-center gap-3 border-2 border-dashed border-gray-400 rounded-lg p-4 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-colors"
+          className="flex items-center gap-3 border-2 border-dashed border-blue-600 rounded-xl p-4 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-colors"
         >
-          <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          <span className="text-gray-600">
+          <span className="text-slate-600">
             {image ? image.name : "Click to upload an image"}
           </span>
         </label>
@@ -126,7 +126,7 @@ const Form = ({ form, setForm }) => {
             <img
               src={preview}
               alt="Preview"
-              className="w-full max-h-40 object-cover rounded-lg border"
+              className="w-full max-h-40 object-cover rounded-xl border border-slate-200"
             />
             <button
               type="button"
@@ -135,7 +135,7 @@ const Form = ({ form, setForm }) => {
                 setPreview(null);
                 if (fileInputRef.current) fileInputRef.current.value = "";
               }}
-              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+              className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 cursor-pointer"
             >
               ×
             </button>
@@ -144,7 +144,7 @@ const Form = ({ form, setForm }) => {
       </div>
 
       <div className="flex flex-col">
-        <label className="mb-1 font-medium">
+        <label className="mb-1 font-semibold text-slate-700 text-sm">
           Latitude
         </label>
         <input
@@ -153,12 +153,12 @@ const Form = ({ form, setForm }) => {
           name="latitude"
           value={form.latitude}
           onChange={handleChange}
-          className="border rounded p-2"
+          className="border border-slate-200 bg-slate-50 rounded-xl p-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
         />
       </div>
 
       <div className="flex flex-col">
-        <label className="mb-1 font-medium">
+        <label className="mb-1 font-semibold text-slate-700 text-sm">
           Longitude
         </label>
         <input
@@ -167,19 +167,19 @@ const Form = ({ form, setForm }) => {
           name="longitude"
           value={form.longitude}
           onChange={handleChange}
-          className="border rounded p-2"
+          className="border border-slate-200 bg-slate-50 rounded-xl p-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
         />
       </div>
 
       <div className="flex flex-col">
-        <label className="mb-1 font-medium">
+        <label className="mb-1 font-semibold text-slate-700 text-sm">
           Department
         </label>
         <select
           name="department"
           value={form.department}
           onChange={handleChange}
-          className="border rounded p-2"
+          className="border border-slate-200 bg-slate-50 rounded-xl p-3 text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-colors"
         >
           <option value="">Select Department</option>
           <option value="Roads">Roads</option>
@@ -193,7 +193,7 @@ const Form = ({ form, setForm }) => {
 
       <button
         type="submit"
-        className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        className="bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors duration-200 shadow-lg shadow-blue-600/20 cursor-pointer"
       >
         Submit a complaint
       </button>
