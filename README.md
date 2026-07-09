@@ -109,24 +109,6 @@ Cloudinary (Image Storage)
 
 ---
 
-## Screenshots
-
-### Home Page
-*(Add Screenshot Here)*
-
-### Dashboard
-*(Add Screenshot Here)*
-
-### Analytics
-*(Add Screenshot Here)*
-
-### Report Complaint
-*(Add Screenshot Here)*
-
-### Admin Dashboard
-*(Add Screenshot Here)*
-
----
 
 ## Installation
 
@@ -198,18 +180,6 @@ Create a `.env` file in the `backend/` directory:
 
 ---
 
-## Future Enhancements
-
-- Push Notifications
-- Email Notifications
-- Complaint Heatmaps
-- AI-based Complaint Categorization
-- Mobile App
-- Department Performance Reports
-- Citizen Feedback System
-
----
-
 ## Contributing
 
 Contributions are always welcome! 
@@ -220,11 +190,6 @@ Contributions are always welcome!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
----
-
-## License
-
-Distributed under the MIT License.
 
 ---
 
