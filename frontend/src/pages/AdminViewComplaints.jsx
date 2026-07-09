@@ -76,7 +76,7 @@ const AdminViewComplaints = () => {
               return (
                 <div
                   key={complaint._id}
-                  className="bg-white rounded-xl border border-slate-200 shadow-sm transition-transform duration-200 overflow-hidden"
+                  className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
                 >
                   <div className="flex">
                     {/* Image */}
@@ -132,22 +132,20 @@ const AdminViewComplaints = () => {
                         <button
                           onClick={() => handleStatusUpdate(complaint._id, 'in-progress')}
                           disabled={isUpdating || currentStatus === 'in-progress'}
-                          className={`px-5 py-2 rounded-xl text-sm font-semibold transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
-                            currentStatus === 'in-progress'
-                              ? 'bg-blue-600 text-white border border-blue-600'
-                              : 'bg-white text-blue-600 border border-blue-600 hover:bg-slate-50'
-                          }`}
+                          className={`px-5 py-2 rounded-xl text-sm font-semibold transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${currentStatus === 'in-progress'
+                            ? 'bg-blue-600 text-white border border-blue-600'
+                            : 'bg-white text-blue-600 border border-blue-600 hover:bg-slate-50'
+                            }`}
                         >
                           {isUpdating ? '...' : 'In Progress'}
                         </button>
                         <button
                           onClick={() => handleStatusUpdate(complaint._id, 'resolved')}
                           disabled={isUpdating || currentStatus === 'resolved'}
-                          className={`px-5 py-2 rounded-xl text-sm font-semibold transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
-                            currentStatus === 'resolved'
-                              ? 'bg-blue-600 text-white border border-blue-600'
-                              : 'bg-white text-blue-600 border border-blue-600 hover:bg-slate-50'
-                          }`}
+                          className={`px-5 py-2 rounded-xl text-sm font-semibold transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${currentStatus === 'resolved'
+                            ? 'bg-blue-600 text-white border border-blue-600'
+                            : 'bg-white text-blue-600 border border-blue-600 hover:bg-slate-50'
+                            }`}
                         >
                           {isUpdating ? '...' : 'Resolved'}
                         </button>

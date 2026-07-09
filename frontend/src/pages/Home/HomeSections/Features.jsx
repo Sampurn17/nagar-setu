@@ -36,7 +36,7 @@ const Features = () => {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-20">
         <div className="text-center mb-14 animate-fade-in">
-          
+
           <h2 className="text-3xl md:text-4xl font-bold text-white">
             Built for Citizens, Designed for Impact
           </h2>
