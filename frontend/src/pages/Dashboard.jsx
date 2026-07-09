@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
+import { io } from 'socket.io-client';
 import 'leaflet/dist/leaflet.css'
 import Navbar from './Navbar'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import { Icon, divIcon } from 'leaflet'
-import MarkerClusterGroup from 'react-leaflet-cluster';
+
 import redLocationIcon from '../assets/red-location.png'
 import yellowLocationIcon from '../assets/yellow-location.png'
 import blueLocationIcon from '../assets/blue-location.png'
@@ -12,7 +13,14 @@ import { MapPin } from 'lucide-react'
 
 const Dashboard = () => {
   const [complaints, setComplaints] = useState([]);
+  const socketRef = useRef(null);
+
   useEffect(() => {
+    // Create socket connection when Dashboard mounts
+    const socket = io("http://localhost:5000");
+    socketRef.current = socket;
+
+    // Fetch initial complaints
     async function fetchComplaints() {
       try {
         const res = await api.get("/complaints");
@@ -22,7 +30,34 @@ const Dashboard = () => {
       }
     }
     fetchComplaints();
+
+    // Listen for real-time status updates
+    socket.on('complaint_status_updated', (updatedData) => {
+      console.log("Real-time update received!", updatedData);
+
+      setComplaints((prevComplaints) =>
+        prevComplaints.map((complaint) =>
+          complaint._id === updatedData.id
+            ? { ...complaint, status: updatedData.status }
+            : complaint
+        )
+      );
+    });
+
+    // Listen for brand new complaints
+    socket.on('new_complaint_submitted', (newComplaint) => {
+      console.log("New complaint received live on map!", newComplaint);
+      setComplaints((prevComplaints) => [newComplaint, ...prevComplaints]);
+    });
+
+    // Cleanup: remove listener and disconnect socket on unmount
+    return () => {
+      socket.off('complaint_status_updated');
+      socket.off('new_complaint_submitted');
+      socket.disconnect();
+    };
   }, []);
+
   const getIcon = (status) => {
     let iconUrl = redLocationIcon;
     if (status === 'assigned' || status === 'in-progress') iconUrl = yellowLocationIcon;
@@ -54,17 +89,7 @@ const Dashboard = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              <MarkerClusterGroup
-                key={complaints.length}
-                chunkedLoading
-                iconCreateFunction={(cluster) => {
-                  return new divIcon({
-                    html: `<div class="cluster-icon">${cluster.getChildCount()}</div>`,
-                    className: "h-12 w-12 rounded-full bg-blue-100 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center font-bold text-2xl",
-                    iconSize: [40, 40],
-                  })
-                }}
-              >
+
                 {complaints.map((complaint) => {
                   const lat = parseFloat(complaint.latitude) || 28.6139;
                   const lng = parseFloat(complaint.longitude) || 77.2090;
@@ -89,8 +114,33 @@ const Dashboard = () => {
                     </Marker>
                   );
                 })}
-              </MarkerClusterGroup>
+
             </MapContainer>
+
+            {/* Map Legend */}
+            <div className="absolute bottom-6 left-6 z-[1000] bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-slate-200/60">
+              <h4 className="text-[11px] font-bold text-slate-500 mb-2.5 uppercase tracking-wider">Map Legend</h4>
+              <div className="flex flex-col gap-2.5 text-sm">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-6 h-6 flex items-center justify-center bg-red-50 rounded-md border border-red-100">
+                    <img src={redLocationIcon} alt="Unresolved" className="w-4 h-4 object-contain" />
+                  </div>
+                  <span className="text-slate-700 font-medium text-xs">Unresolved</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-6 h-6 flex items-center justify-center bg-amber-50 rounded-md border border-amber-100">
+                    <img src={yellowLocationIcon} alt="In Progress" className="w-4 h-4 object-contain" />
+                  </div>
+                  <span className="text-slate-700 font-medium text-xs">In Progress</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-6 h-6 flex items-center justify-center bg-blue-50 rounded-md border border-blue-100">
+                    <img src={blueLocationIcon} alt="Resolved" className="w-4 h-4 object-contain" />
+                  </div>
+                  <span className="text-slate-700 font-medium text-xs">Resolved</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="w-[28%] bg-white border-l border-slate-200 overflow-y-auto p-5">

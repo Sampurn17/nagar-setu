@@ -35,6 +35,12 @@ async function createComplaint(req, res) {
 
         console.log("Complaint created:", complaint);
 
+        // >>> EMIT EVENT TO ALL CONNECTED USERS <<<
+        const io = req.app.get('io');
+        if(io) {
+            io.emit('new_complaint_submitted', complaint);
+        }
+
         return res.status(201).json({
             success: true,
             message: "Complaint created successfully",
@@ -120,6 +126,12 @@ async function updateComplaintStatus(req, res) {
                 message: "Complaint not found",
             });
         }
+
+        const io = req.app.get('io');
+        io.emit('complaint_status_updated', {
+            id: complaint._id,
+            status: complaint.status
+        });
 
         return res.status(200).json({
             success: true,

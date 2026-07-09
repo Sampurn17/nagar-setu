@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
+import { io } from 'socket.io-client';
 import api from '../api/axios'
 import Navbar from './Navbar'
 
@@ -6,8 +7,13 @@ const AdminViewComplaints = () => {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
+  const socketRef = useRef(null);
 
   useEffect(() => {
+    // Create socket connection
+    const socket = io("http://localhost:5000");
+    socketRef.current = socket;
+
     async function fetchComplaints() {
       try {
         const res = await api.get("/complaints");
@@ -19,6 +25,18 @@ const AdminViewComplaints = () => {
       }
     }
     fetchComplaints();
+
+    // Listen for brand new complaints
+    socket.on('new_complaint_submitted', (newComplaint) => {
+      console.log("A citizen just filed a new issue live!", newComplaint);
+      // Prepend the new complaint to the top of the list instantly
+      setComplaints((prevComplaints) => [newComplaint, ...prevComplaints]);
+    });
+
+    return () => {
+      socket.off('new_complaint_submitted');
+      socket.disconnect();
+    };
   }, []);
 
   const handleStatusUpdate = async (complaintId, newStatus) => {

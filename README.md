@@ -34,7 +34,8 @@ Citizens benefit from an intuitive interface with location-based reporting, allo
 - Interactive dashboard
 - Live complaint map
 - Analytics dashboard
-- Real-time complaint status tracking
+- Real-time complaint status tracking (WebSockets)
+- Live incoming complaints feed
 
 ### Admin Features
 - View all complaints
@@ -42,7 +43,7 @@ Citizens benefit from an intuitive interface with location-based reporting, allo
 - Mark complaints as Assigned
 - Mark complaints as Resolved
 - Department-wise management
-- Live dashboard overview
+- Live dashboard overview with real-time updates (WebSockets)
 
 ---
 
@@ -50,8 +51,8 @@ Citizens benefit from an intuitive interface with location-based reporting, allo
 
 | Layer | Technology |
 | --- | --- |
-| **Frontend** | React, React Router, Tailwind CSS, React Leaflet, Axios, Recharts, Lucide Icons |
-| **Backend** | Node.js, Express.js, MongoDB, Mongoose, JWT Authentication, Multer, Cloudinary, Cookie Parser |
+| **Frontend** | React, React Router, Tailwind CSS, React Leaflet, Axios, Recharts, Socket.IO Client, Lucide Icons |
+| **Backend** | Node.js, Express.js, Socket.IO, MongoDB, Mongoose, JWT Authentication, Multer, Cloudinary, Cookie Parser |
 | **Database** | MongoDB Atlas |
 | **Maps** | Leaflet, OpenStreetMap |
 | **Deployment** | Vercel (Frontend), Render (Backend) |
@@ -176,7 +177,6 @@ Create a `.env` file in the `backend/` directory:
 | PATCH | `/api/complaints/:id/status` | Update complaint status (Admin) |
 | GET | `/api/analytics/department-counts` | Get complaint distribution by department |
 | GET | `/api/analytics/status-counts` | Get complaint distribution by status |
-| GET | `/api/analytics/monthly-trend` | Get monthly complaint trends |
 
 ---
 
