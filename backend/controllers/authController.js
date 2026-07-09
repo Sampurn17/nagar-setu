@@ -37,8 +37,8 @@ async function registerUserController(req, res) {
 
     res.cookie("token", token, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'lax'
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
     })
     res.status(201).json({
         message: "User registered successfully",
@@ -88,8 +88,8 @@ async function loginUserController(req, res) {
 
     res.cookie("token", token, {
         httpOnly: true,
-        secure: false,      // localhost
-        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
 
     res.status(200).json({
@@ -118,8 +118,8 @@ async function logoutUserController(req, res) {
 
     res.clearCookie("token", {
         httpOnly: true,
-        secure: true,
-        sameSite: 'lax'
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax'
     });
     res.status(200).json({
         message: "User logged out successfully"

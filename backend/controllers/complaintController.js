@@ -19,7 +19,21 @@ async function createComplaint(req, res) {
             department,
         } = req.body;
 
-        const imageUrl = req.file ? req.file.path : "";
+        let imageUrl = "";
+        if (req.file) {
+            console.log("Uploading image to Cloudinary from memory buffer...");
+            const uploadResult = await new Promise((resolve, reject) => {
+                const stream = require("../config/Cloudinary").uploader.upload_stream(
+                    { folder: "Nagarsetu" },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                stream.end(req.file.buffer);
+            });
+            imageUrl = uploadResult.secure_url;
+        }
 
         console.log("Creating complaint...");
 

@@ -17,7 +17,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     // Create socket connection when Dashboard mounts
-    const socket = io("http://localhost:5000");
+    const socket = io(import.meta.env.VITE_API_URL || "http://localhost:5000");
     socketRef.current = socket;
 
     // Fetch initial complaints

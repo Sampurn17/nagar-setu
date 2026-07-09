@@ -11,14 +11,20 @@ const cookieParser = require("cookie-parser");
 dbConnect();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
+
+const allowedOrigins = [
+    "http://localhost:5173",
+    process.env.CLIENT_URL
+].filter(Boolean);
+
 //initialsing socket on server with cors
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: allowedOrigins,
         methods: ["GET", "POST"],
-
+        credentials: true
     }
 });
 //listen the incoming websocket connections
@@ -33,7 +39,7 @@ app.set('io', io)
 // Middleware
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: allowedOrigins,
     credentials: true,
 }))
 app.use(express.json());
