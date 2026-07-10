@@ -31,7 +31,8 @@ const Login = () => {
     const result = loginSchema.safeParse(form);
 
     if (!result.success) {
-      toast.error(result.error.errors[0].message, {
+      const errorMessage = result.error?.issues?.[0]?.message || result.error?.errors?.[0]?.message || "Please fill all required fields correctly.";
+      toast.error(errorMessage, {
         position: "top-right",
         autoClose: 1300,
         hideProgressBar: false,

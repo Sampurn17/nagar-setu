@@ -27,7 +27,8 @@ const loginSchema = z.object({
 async function registerUserController(req, res) {
     const validationResult = registerSchema.safeParse(req.body);
     if (!validationResult.success) {
-        return res.status(400).json({ message: validationResult.error.errors[0].message });
+        const errorMessage = validationResult.error?.issues?.[0]?.message || validationResult.error?.errors?.[0]?.message || "Invalid request data";
+        return res.status(400).json({ message: errorMessage });
     }
     const { name, email, password } = validationResult.data;
     const isUserAlreadyExist = await userModel.findOne({
@@ -78,7 +79,8 @@ async function loginUserController(req, res) {
 
     const validationResult = loginSchema.safeParse(req.body);
     if (!validationResult.success) {
-        return res.status(400).json({ message: validationResult.error.errors[0].message });
+        const errorMessage = validationResult.error?.issues?.[0]?.message || validationResult.error?.errors?.[0]?.message || "Invalid request data";
+        return res.status(400).json({ message: errorMessage });
     }
     const { email, password } = validationResult.data;
 
