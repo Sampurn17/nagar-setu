@@ -17,8 +17,8 @@ const server = http.createServer(app);
 const rateLimit = require('express-rate-limit');
 
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 25,
+    windowMs: 5 * 60 * 1000,
+    max: 10,
     message: {
         error: "Too many requests from this IP, please try again after 15 minutes."
     },
