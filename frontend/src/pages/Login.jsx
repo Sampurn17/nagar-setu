@@ -4,6 +4,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import api from '../api/axios';
 import { toast, Slide } from "react-toastify"
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
 
 const Login = () => {
   const navigate = useNavigate();
@@ -21,6 +27,24 @@ const Login = () => {
   }
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const result = loginSchema.safeParse(form);
+
+    if (!result.success) {
+      toast.error(result.error.errors[0].message, {
+        position: "top-right",
+        autoClose: 1300,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Slide,
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       await api.post("/auth/login", form);

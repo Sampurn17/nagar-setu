@@ -2,6 +2,21 @@ const userModel = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const tokenBlacklistModel = require("../models/Blacklist");
+const { z } = require("zod");
+
+const authSchema = z.object({
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters long"),
+});
+
+const registerSchema = authSchema.extend({
+    name: z.string().min(1, "Name is required"),
+});
+
+const loginSchema = z.object({
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(1, "Password is required"),
+});
 
 /**
  * @name registerUserController
@@ -10,12 +25,11 @@ const tokenBlacklistModel = require("../models/Blacklist");
  */
 
 async function registerUserController(req, res) {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-        return res.status(400).json({
-            message: "Please provide name, email and password"
-        })
+    const validationResult = registerSchema.safeParse(req.body);
+    if (!validationResult.success) {
+        return res.status(400).json({ message: validationResult.error.errors[0].message });
     }
+    const { name, email, password } = validationResult.data;
     const isUserAlreadyExist = await userModel.findOne({
         $or: [{ name }, { email }]
     })
@@ -62,7 +76,11 @@ async function registerUserController(req, res) {
 async function loginUserController(req, res) {
     console.log("BODY:", req.body);
 
-    const { email, password } = req.body;
+    const validationResult = loginSchema.safeParse(req.body);
+    if (!validationResult.success) {
+        return res.status(400).json({ message: validationResult.error.errors[0].message });
+    }
+    const { email, password } = validationResult.data;
 
     const user = await userModel.findOne({ email });
     console.log("USER:", user);

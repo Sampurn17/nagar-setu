@@ -16,16 +16,25 @@ const server = http.createServer(app);
 
 const allowedOrigins = [
     "http://localhost:5173",
+    "http://127.0.0.1:5173",
     process.env.CLIENT_URL
 ].filter(Boolean);
 
+const corsOptions = {
+    origin: function(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    credentials: true,
+};
+
 //initialsing socket on server with cors
 const io = new Server(server, {
-    cors: {
-        origin: allowedOrigins,
-        methods: ["GET", "POST"],
-        credentials: true
-    }
+    cors: corsOptions
 });
 //listen the incoming websocket connections
 io.on('connection', (socket) => {
@@ -38,10 +47,7 @@ io.on('connection', (socket) => {
 app.set('io', io)
 // Middleware
 
-app.use(cors({
-    origin: allowedOrigins,
-    credentials: true,
-}))
+app.use(cors(corsOptions))
 app.use(express.json());
 app.use(cookieParser());
 // Routes
