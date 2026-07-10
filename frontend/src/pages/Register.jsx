@@ -4,6 +4,17 @@ import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft } from 'lucide-react';
 import api from "../api/axios";
 import { toast, Slide } from "react-toastify";
+import { z } from "zod";
+
+const registerSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().min(1, "Email is required").email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string().min(1, "Please confirm your password"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
 
 const Register = () => {
   const navigate = useNavigate();
@@ -23,8 +34,11 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (form.password !== form.confirmPassword) {
-      toast.error("Passwords do not match", {
+    const result = registerSchema.safeParse(form);
+
+    if (!result.success) {
+      const errorMessage = result.error?.issues?.[0]?.message || result.error?.errors?.[0]?.message || "Please fill all required fields correctly.";
+      toast.error(errorMessage, {
         position: "top-right",
         autoClose: 1300,
         hideProgressBar: false,
