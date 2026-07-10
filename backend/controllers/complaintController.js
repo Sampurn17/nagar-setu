@@ -1,4 +1,13 @@
 const Complaint = require("../models/Complaint");
+const { z } = require("zod");
+
+const createComplaintSchema = z.object({
+    title: z.string().min(1, "Title is required").max(100, "Title is too long"),
+    description: z.string().min(1, "Description is required"),
+    latitude: z.union([z.number(), z.string()]).optional(),
+    longitude: z.union([z.number(), z.string()]).optional(),
+    department: z.string().min(1, "Department is required"),
+});
 
 /**
  * @name createComplaintController
@@ -11,13 +20,19 @@ async function createComplaint(req, res) {
         console.log("req.body:", req.body);
         console.log("req.file:", req.file);
 
+        const validationResult = createComplaintSchema.safeParse(req.body);
+        if (!validationResult.success) {
+            const errorMessage = validationResult.error?.issues?.[0]?.message || validationResult.error?.errors?.[0]?.message || "Invalid request data";
+            return res.status(400).json({ success: false, message: errorMessage });
+        }
+
         const {
             title,
             description,
             latitude,
             longitude,
             department,
-        } = req.body;
+        } = validationResult.data;
 
         let imageUrl = "";
         if (req.file) {

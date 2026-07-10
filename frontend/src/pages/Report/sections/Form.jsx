@@ -2,6 +2,15 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom'
 import api from '../../../api/axios'
 import { toast, Slide } from 'react-toastify'
+import { z } from "zod";
+
+const createComplaintSchema = z.object({
+  title: z.string().min(1, "Title is required").max(100, "Title is too long"),
+  description: z.string().min(1, "Description is required"),
+  latitude: z.union([z.number(), z.string().min(1, "Latitude is required")]),
+  longitude: z.union([z.number(), z.string().min(1, "Longitude is required")]),
+  department: z.string().min(1, "Department is required"),
+});
 
 const Form = ({ form, setForm }) => {
   const navigate = useNavigate();
@@ -32,8 +41,11 @@ const Form = ({ form, setForm }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.title || !form.description || !form.latitude || !form.longitude || !form.department) {
-      toast.error("Fill the empty fields", {
+    const result = createComplaintSchema.safeParse(form);
+
+    if (!result.success) {
+      const errorMessage = result.error?.issues?.[0]?.message || result.error?.errors?.[0]?.message || "Please fill all required fields correctly.";
+      toast.error(errorMessage, {
         position: "top-right",
         autoClose: 1300,
         hideProgressBar: false,

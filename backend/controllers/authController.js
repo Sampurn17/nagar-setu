@@ -18,6 +18,12 @@ const loginSchema = z.object({
     password: z.string().min(1, "Password is required"),
 });
 
+const updateProfileSchema = z.object({
+    name: z.string().min(1, "Name cannot be empty").optional(),
+    email: z.string().email("Invalid email address").optional(),
+    password: z.string().min(6, "Password must be at least 6 characters long").optional(),
+});
+
 /**
  * @name registerUserController
  * @description Register a new user, expects name, email and password
@@ -173,4 +179,53 @@ async function getMeController(req, res) {
     }
 }
 
-module.exports = { registerUserController, loginUserController, logoutUserController, getMeController };
+/**
+ * @name updateProfileController
+ * @description Update user profile securely
+ * @access Private
+ */
+async function updateProfileController(req, res) {
+    try {
+        const validationResult = updateProfileSchema.safeParse(req.body);
+        if (!validationResult.success) {
+            const errorMessage = validationResult.error?.issues?.[0]?.message || validationResult.error?.errors?.[0]?.message || "Invalid request data";
+            return res.status(400).json({ message: errorMessage });
+        }
+
+        const { name, email, password } = validationResult.data;
+        const updates = {};
+        
+        if (name) updates.name = name;
+        if (email) updates.email = email;
+        if (password) updates.password = await bcrypt.hash(password, 10);
+
+        if (Object.keys(updates).length === 0) {
+            return res.status(400).json({ message: "No valid fields to update" });
+        }
+
+        const updatedUser = await userModel.findByIdAndUpdate(
+            req.user.id, 
+            { $set: updates }, 
+            { new: true }
+        ).select("-password");
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        res.status(200).json({
+            message: "Profile updated successfully",
+            user: {
+                id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                role: updatedUser.role
+            }
+        });
+    } catch (err) {
+        console.error("updateProfile error:", err);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
+module.exports = { registerUserController, loginUserController, logoutUserController, getMeController, updateProfileController };

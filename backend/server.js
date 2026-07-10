@@ -14,16 +14,30 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 
+const rateLimit = require('express-rate-limit');
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: {
+    error: "Too many requests from this IP, please try again after 15 minutes."
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 const allowedOrigins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://nagar-setu-black.vercel.app",
     process.env.CLIENT_URL
 ].filter(Boolean);
 
 const corsOptions = {
-    origin: true, // This reflects the request origin, fixing any deployment CORS issues
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
+    optionsSuccessStatus: 200
 };
 
 //initialsing socket on server with cors
@@ -41,6 +55,7 @@ io.on('connection', (socket) => {
 app.set('io', io)
 // Middleware
 
+app.use(limiter);
 app.use(cors(corsOptions))
 app.use(express.json());
 app.use(cookieParser());
